@@ -285,55 +285,61 @@ $('#solarize_campaigns').change(function () {
 //two checkboxes for 1 layer//
 
 $('#USP').change(function () {
-        var USP_button = $(this);
-        var PACE_button = $('#pace_financing');
-        console.log (PACE_button);
-    
-//    if ($(this).is(':checked') && PACE_button.is(':checked')) {
-//		var sql2 = "SELECT * FROM merged_unified_pace";
-//            console.log (sql2); 
-//            dataLayerPACEandPermit.setSQL(sql2);  
-//            dataLayerPACEandPermit.show();
-//            }   
-    
-    if ($(this).is(':checked')) {
-          var sql = "SELECT * FROM merged_unified_pace WHERE unified_s IS null";
-          console.log (sql); 
-          dataLayerPACEandPermit.setSQL(sql);
-          dataLayerPACEandPermit.show();
-            }
-    
-        else {
-          dataLayerPACEandPermit.setSQL(sql);
-          dataLayerPACEandPermit.hide();
-            console.log (sql); 
-           }
-        });
+  var USP_button = $(this);
+  var PACE_button = $('#pace_financing');
+  console.log (PACE_button);
+
+  if ($(this).is(':checked') && PACE_button.is(':checked')) {
+    var sql2 = "SELECT * FROM merged_unified_pace";
+    console.log (sql2); 
+    dataLayerPACEandPermit.setSQL(sql2);  
+    dataLayerPACEandPermit.show();
+  }   
+  else if ($(this).is(':checked')) {
+    var sql = "SELECT * FROM merged_unified_pace WHERE unified_s IS null";
+    console.log (sql); 
+    dataLayerPACEandPermit.setSQL(sql);
+    dataLayerPACEandPermit.show();
+  }
+  else if (PACE_button.is(':checked')) {
+    var sql = "SELECT * FROM merged_unified_pace WHERE unified_s = 'yes'";
+    console.log (sql); 
+    dataLayerPACEandPermit.setSQL(sql);
+    dataLayerPACEandPermit.show();
+  }
+  else {
+    dataLayerPACEandPermit.hide();
+  }
+});
 
 $('#pace_financing').change(function () {
-        var PACE_button = $(this);
-        var USP_button = $('#USP');
-        console.log (USP_button);
-//    
-//    if ($(this).is(':checked') && USP_button.is(':checked')) {
-//		  var sql2 = "SELECT * FROM merged_unified_pace";
-//            console.log (sql2); 
-//            dataLayerPACEandPermit.setSQL(sql2);
-//            dataLayerPACEandPermit.show();
-//		}    
-    
-    if ($(this).is(':checked')) {  
-          var sql = "SELECT * FROM merged_unified_pace WHERE unified_s = 'yes'";
-          console.log (sql); 
-          dataLayerPACEandPermit.setSQL(sql);
-          dataLayerPACEandPermit.show();
-            }
-    
-    else {
-        dataLayerPACEandPermit.setSQL(sql);
-        dataLayerPACEandPermit.hide();
-        }
-    });
+  var PACE_button = $(this);
+  var USP_button = $('#USP');
+  console.log (USP_button);
+
+  if ($(this).is(':checked') && USP_button.is(':checked')) {
+    var sql2 = "SELECT * FROM merged_unified_pace";
+    console.log (sql2); 
+    dataLayerPACEandPermit.setSQL(sql2);
+    dataLayerPACEandPermit.show();
+  }    
+  else if ($(this).is(':checked')) {  
+    var sql = "SELECT * FROM merged_unified_pace WHERE unified_s = 'yes'";
+    console.log (sql); 
+    dataLayerPACEandPermit.setSQL(sql);
+    dataLayerPACEandPermit.show();
+  }
+  else if (USP_button.is(':checked')) {
+    var sql = "SELECT * FROM merged_unified_pace WHERE unified_s IS null";
+    console.log (sql); 
+    dataLayerPACEandPermit.setSQL(sql);
+    dataLayerPACEandPermit.show();
+  }
+  else {
+    console.log (sql); 
+    dataLayerPACEandPermit.hide();
+  }
+});
 
     
 // DROPDOWN combined with info from RADIO BUTTON selection //
