@@ -236,21 +236,24 @@ var dataLayerDollarPerWatt;
 var dataLayerLMI;
 var dataLayerPACEandPermit;
 var dataLayerSolarize;
-var sqlPACE;    
-var sqlPermit;
     
 $(document).ready(function () {
     cartodb.createVis('map','https://thenewschool.cartodb.com/u/jansynthaw/api/v2/viz/348f3bfa-fda8-11e5-835d-0e3ff518bd15/viz.json',{
             cartodb_logo: false, 
             center_lat: 43,
             center_lon: -75,
-            zoom: 7
+            zoom: 7,
+            layer_selector: false
     })
     .done(function (vis, layers) {
         dataLayerDollarPerWatt = layers[1].getSubLayer(0); 
         dataLayerLMI = layers[1].getSubLayer(1);
         dataLayerPACEandPermit = layers[1].getSubLayer(2);
         dataLayerSolarize = layers[1].getSubLayer(3); 
+        dataLayerSolarize.show();
+        dataLayerDollarPerWatt.hide();
+        dataLayerLMI.hide();
+        dataLayerPACEandPermit.hide();
     });
   
   // change handlers for checkboxes
@@ -278,26 +281,145 @@ $('#solarize_campaigns').change(function () {
       dataLayerSolarize.hide();
     }
   })
+
+//two checkboxes for 1 layer//
+
 $('#USP').change(function () {
-    if ($(this).is(':checked')) {
-      sqlPermit.show();
-    }
-    else {
-      sqlPermit.hide();
-    }
-  })
-$('#pace_financing').change(function () {
-    if ($(this).is(':checked')) {
-      sqlPACE.show();
-    }
-    else {
-      sqlPACE.hide();
-    }
-  })
-
-
-});
+        var USP_button = $(this);
+        var PACE_button = $('#pace_financing');
+        console.log (PACE_button);
     
+//    if ($(this).is(':checked') && PACE_button.is(':checked')) {
+//		var sql2 = "SELECT * FROM merged_unified_pace";
+//            console.log (sql2); 
+//            dataLayerPACEandPermit.setSQL(sql2);  
+//            dataLayerPACEandPermit.show();
+//            }   
+    
+    if ($(this).is(':checked')) {
+          var sql = "SELECT * FROM merged_unified_pace WHERE unified_s IS null";
+          console.log (sql); 
+          dataLayerPACEandPermit.setSQL(sql);
+          dataLayerPACEandPermit.show();
+            }
+    
+        else {
+          dataLayerPACEandPermit.setSQL(sql);
+          dataLayerPACEandPermit.hide();
+            console.log (sql); 
+           }
+        });
+
+$('#pace_financing').change(function () {
+        var PACE_button = $(this);
+        var USP_button = $('#USP');
+        console.log (USP_button);
+//    
+//    if ($(this).is(':checked') && USP_button.is(':checked')) {
+//		  var sql2 = "SELECT * FROM merged_unified_pace";
+//            console.log (sql2); 
+//            dataLayerPACEandPermit.setSQL(sql2);
+//            dataLayerPACEandPermit.show();
+//		}    
+    
+    if ($(this).is(':checked')) {  
+          var sql = "SELECT * FROM merged_unified_pace WHERE unified_s = 'yes'";
+          console.log (sql); 
+          dataLayerPACEandPermit.setSQL(sql);
+          dataLayerPACEandPermit.show();
+            }
+    
+    else {
+        dataLayerPACEandPermit.setSQL(sql);
+        dataLayerPACEandPermit.hide();
+        }
+    });
+
+    
+// DROPDOWN combined with info from RADIO BUTTON selection //
+    
+    $('.dropdown').change(function () {
+        var time = $(this).val();
+        var purchase_type= $('.accordion-toggle :input[type=radio]:checked').val();
+        var sql;
+        console.log (time, purchase_type)
+        if (time === 'before' && purchase_type === 'Direct Purchase' ) {
+              sql = "SELECT *, purchase_doll_watt_jan_jun_15 AS doll_watt  FROM dollarperwatt_allpurchasetypes_alltimes";
+        }
+        if (time === 'during' && purchase_type === 'Direct Purchase' ) {
+              sql = "SELECT *, purchase_doll_watt_jul_dec_15 AS doll_watt  FROM dollarperwatt_allpurchasetypes_alltimes";
+        }
+        if (time === 'after' && purchase_type === 'Direct Purchase' ) {
+              sql = "SELECT *, purchase_doll_watt_jan_apr_16 AS doll_watt  FROM dollarperwatt_allpurchasetypes_alltimes";
+        }
+        if (time === 'after' && purchase_type === 'Lease' ) {
+              sql = "SELECT *, lease_doll_watt_jan_apr_16 AS doll_watt  FROM dollarperwatt_allpurchasetypes_alltimes";
+        }
+        if (time === 'during' && purchase_type === 'Lease' ) {
+               sql = "SELECT *, lease_doll_watt_jul_dec_15 AS doll_watt  FROM dollarperwatt_allpurchasetypes_alltimes";
+        }
+        if (time === 'before' && purchase_type === 'Lease' ) {
+              sql = "SELECT *, lease_doll_watt_jan_jun_15 AS doll_watt  FROM dollarperwatt_allpurchasetypes_alltimes";
+        }
+        if (time === 'after' && purchase_type === 'PPA' ) {
+              sql = "SELECT *, ppa_doll_watt_jan_apr_16 AS doll_watt  FROM dollarperwatt_allpurchasetypes_alltimes";
+        }
+       if (time === 'during' && purchase_type === 'PPA' ) {
+              sql = "SELECT *, ppa_doll_watt_jul_dec_15 AS doll_watt  FROM dollarperwatt_allpurchasetypes_alltimes";
+       }
+        if (time === 'before' && purchase_type === 'PPA' ) {
+              sql = "SELECT *, ppa_doll_watt_jan_jun_15 AS doll_watt FROM dollarperwatt_allpurchasetypes_alltimes";
+       }  
+        console.log (sql);    
+        dataLayerDollarPerWatt.setSQL(sql);
+       
+    });
+     
+     
+     
+     
+     
+//    
+  
+// RADIO BUTTON combined with DROPDOWN data //
+//
+    $('input[name="DPW"]').change(function () {
+        console.log('radio');
+        var time = $('.dropdown').val();
+        var purchase_type = $(this).val();
+        var sql;
+        console.log (time, purchase_type);
+        if (time === 'before' && purchase_type === 'Direct Purchase' ) {
+              sql = "SELECT *, purchase_doll_watt_jan_jun_15 AS doll_watt FROM dollarperwatt_allpurchasetypes_alltimes";
+        }
+        if (time === 'during' && purchase_type === 'Direct Purchase' ) {
+              sql = "SELECT *, purchase_doll_watt_jul_dec_15 AS doll_watt FROM dollarperwatt_allpurchasetypes_alltimes";
+        }
+        if (time === 'after' && purchase_type === 'Direct Purchase' ) {
+              sql = "SELECT *, purchase_doll_watt_jan_apr_16 AS doll_watt FROM dollarperwatt_allpurchasetypes_alltimes";
+        }
+        if (time === 'after' && purchase_type === 'Lease' ) {
+              sql = "SELECT *, lease_doll_watt_jan_apr_16 AS doll_watt  FROM dollarperwatt_allpurchasetypes_alltimes";
+        }
+        if (time === 'during' && purchase_type === 'Lease' ) {
+              sql = "SELECT *, lease_doll_watt_jul_dec_15 AS doll_watt  FROM dollarperwatt_allpurchasetypes_alltimes";
+        }
+        if (time === 'before' && purchase_type === 'Lease' ) {
+              sql = "SELECT *, lease_doll_watt_jan_jun_15 AS doll_watt  FROM dollarperwatt_allpurchasetypes_alltimes";
+        }
+        if (time === 'after' && purchase_type === 'PPA' ) {
+              sql = "SELECT *, ppa_doll_watt_jan_apr_16 AS doll_watt  FROM dollarperwatt_allpurchasetypes_alltimes";
+        }
+        if (time === 'during' && purchase_type === 'PPA' ) {
+              sql = "SELECT *, ppa_doll_watt_jul_dec_15 AS doll_watt  FROM dollarperwatt_allpurchasetypes_alltimes";
+        }
+        if (time === 'before' && purchase_type === 'PPA' ) {
+              sql = "SELECT *, ppa_doll_watt_jan_jun_15 AS doll_watt  FROM dollarperwatt_allpurchasetypes_alltimes";
+        }          
+        console.log (sql);    
+        dataLayerDollarPerWatt.setSQL(sql);
+    });
+});
     
 //Tooltip Checkboxes//        
 $(document).ready(function () {
@@ -419,7 +541,7 @@ $(document).ready(function($) {
         
         <br>
           
-<!-- DollarPerWatt - dropdown menu -->        
+<!-- DollarPerWatt - DROPDOWN menu -->        
 <form>
     <select class="dropdown">
         <option value="after">Choose a time period: </option>
